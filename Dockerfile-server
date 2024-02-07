@@ -17,6 +17,7 @@ ARG BASE_TAG=rolling
 ARG BUILDER_IMAGE=bitnami/golang
 ARG BUILDER_TAG=latest
 ARG GO_WORKDIR=/opt/app-root/src/go/src/github.com/ibm-messaging/mq-container
+
 ARG MQ_ARCHIVE="downloads/9.3.4.0-IBM-MQ-Advanced-for-Developers-Non-Install-LinuxX64.tar.gz"
 
 ###############################################################################
@@ -110,32 +111,32 @@ LABEL summary="IBM MQ Advanced Server" \
 COPY --from=mq-redux /opt/mqm-redux/ /opt/mqm/
 COPY setup-image.sh /usr/local/bin/
 COPY install-mq-server-prereqs.sh /usr/local/bin/
-RUN env \
-  && chmod u+x /usr/local/bin/install-*.sh \
-  && chmod u+x /usr/local/bin/setup-image.sh \
-  && install-mq-server-prereqs.sh \
-  && setup-image.sh \
-  && /opt/mqm/bin/security/amqpamcf \
-  && chown -R 1001:root /opt/mqm/*
+RUN env
+RUN chmod u+x /usr/local/bin/install-*.sh
+RUN chmod u+x /usr/local/bin/setup-image.sh
+RUN install-mq-server-prereqs.sh
+RUN setup-image.sh
+RUN /opt/mqm/bin/security/amqpamcf
+RUN chown -R 1001:root /opt/mqm/*
 COPY --from=builder $GO_WORKDIR/runmqserver /usr/local/bin/
 COPY --from=builder $GO_WORKDIR/chkmq* /usr/local/bin/
 COPY ha/native-ha.ini.tpl /etc/mqm/native-ha.ini.tpl
 # Copy web XML files
 COPY web /etc/mqm/web
 COPY etc/mqm/*.tpl /etc/mqm/
-RUN ln -s /run/mqwebcontainer.xml /etc/mqm/web/installations/Installation1/servers/mqweb/mqwebcontainer.xml \
-  && ln -s /run/tls.xml /etc/mqm/web/installations/Installation1/servers/mqweb/tls.xml \
-  && ln -s /run/jvm.options /etc/mqm/web/installations/Installation1/servers/mqweb/configDropins/defaults/jvm.options \
-  && ln -s /run/15-tls.mqsc /etc/mqm/15-tls.mqsc \
-  && ln -s /run/native-ha.ini /etc/mqm/native-ha.ini
-RUN chmod ug+x /usr/local/bin/runmqserver \
-  && chown 1001:root /usr/local/bin/*mq* \
-  && chmod ug+x /usr/local/bin/chkmq* \
-  && chown -R 1001:root /etc/mqm/* \
-  && touch /run/termination-log \
-  && chown 1001:root /run/termination-log \
-  && chmod 0660 /run/termination-log \
-  && chmod -R g+w /etc/mqm/web
+RUN ln -s /run/mqwebcontainer.xml /etc/mqm/web/installations/Installation1/servers/mqweb/mqwebcontainer.xml
+RUN ln -s /run/tls.xml /etc/mqm/web/installations/Installation1/servers/mqweb/tls.xml
+RUN ln -s /run/jvm.options /etc/mqm/web/installations/Installation1/servers/mqweb/configDropins/defaults/jvm.options
+RUN ln -s /run/15-tls.mqsc /etc/mqm/15-tls.mqsc
+RUN ln -s /run/native-ha.ini /etc/mqm/native-ha.ini
+RUN chmod ug+x /usr/local/bin/runmqserver
+RUN chown 1001:root /usr/local/bin/*mq*
+RUN chmod ug+x /usr/local/bin/chkmq*
+RUN chown -R 1001:root /etc/mqm/*
+RUN touch /run/termination-log
+RUN chown 1001:root /run/termination-log
+RUN chmod 0660 /run/termination-log
+RUN chmod -R g+w /etc/mqm/web
 # Always use port 1414 for MQ & 9157 for the metrics
 EXPOSE 1414 9157 9443
 ENV MQ_OVERRIDE_DATA_PATH=/mnt/mqm/data MQ_OVERRIDE_INSTALLATION_NAME=Installation1 MQ_USER_NAME="mqm" PATH="${PATH}:/opt/mqm/bin"
