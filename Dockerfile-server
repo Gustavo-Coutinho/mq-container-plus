@@ -155,7 +155,7 @@ ENTRYPOINT ["runmqserver"]
 FROM builder as cbuilder
 USER 0
 # Install the Apache Portable Runtime code (used for htpasswd hash checking)
-RUN yum --assumeyes --disableplugin=subscription-manager install apr-devel apr-util-openssl apr-util-devel
+RUN apt-get update && apt-get install -y apache2-dev libapr1-dev libaprutil1-dev
 COPY authservice/ /opt/app-root/src/authservice/
 WORKDIR /opt/app-root/src/authservice/mqhtpass
 RUN make all
