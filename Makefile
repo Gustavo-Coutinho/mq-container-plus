@@ -237,23 +237,32 @@ advancedserver: build-advancedserver test-advancedserver
 .PHONY: incubating
 incubating: build-explorer
 
-downloads/$(MQ_ARCHIVE_DEV):
-	$(info $(SPACER)$(shell printf $(TITLE)"Downloading IBM MQ Advanced for Developers "$(MQ_VERSION)$(END)))
-	mkdir -p downloads
-ifneq "$(BUILD_RSYNC_SERVER)" "$(EMPTY)"
-# Use key which is not stored in the repository to fetch the files from the fileserver
-	curl --fail --location $(BUILD_RSYNC_ENCRYPTED_KEY_URL) --output ./host.key.gpg
-	@echo $(BUILD_RSYNC_ENCRYPTION_PASSWORD)|gpg --batch --passphrase-fd 0 ./host.key.gpg
-	chmod 600 ./host.key
-	rsync -rv -e "ssh -o BatchMode=yes -q -o StrictHostKeyChecking=no -i ./host.key" --include="*/" --include="*.tar.gz" --exclude="*" $(BUILD_RSYNC_USER)@$(BUILD_RSYNC_SERVER):"$(BUILD_RSYNC_PATH)" downloads/$(MQ_ARCHIVE_DEV)
-	-@rm host.key.gpg host.key
-else
-ifneq "$(MQ_ARCHIVE_REPOSITORY_DEV)" "$(EMPTY)"
-	curl --fail --user $(MQ_ARCHIVE_REPOSITORY_USER):$(MQ_ARCHIVE_REPOSITORY_CREDENTIAL) --request GET "$(MQ_ARCHIVE_REPOSITORY_DEV)" --output downloads/$(MQ_ARCHIVE_DEV)
-else
-	curl --fail --location https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqadv/$(MQ_ARCHIVE_DEV) --output downloads/$(MQ_ARCHIVE_DEV)
-endif
-endif
+$(MQ_ARCHIVE_DEV):
+	# commands to create or download the MQ image if it does not exist:
+
+downloads/$(MQ_ARCHIVE_DEV): $(MQ_ARCHIVE_DEV)
+	$(eval MQ_ARCHIVE_DEV_EXISTS = $(wildcard $(MQ_ARCHIVE_DEV)))
+	ifeq ($(MQ_ARCHIVE_DEV_EXISTS),$(MQ_ARCHIVE_DEV))
+		# file exists, do nothing
+	else
+		# file does not exist, so download it:
+		$(info $(SPACER)$(shell printf $(TITLE)"Downloading IBM MQ Advanced for Developers "$(MQ_VERSION)$(END)))
+		mkdir -p downloads
+		ifneq "$(BUILD_RSYNC_SERVER)" "$(EMPTY)"
+		# Use key which is not stored in the repository to fetch the files from the fileserver
+			curl --fail --location $(BUILD_RSYNC_ENCRYPTED_KEY_URL) --output ./host.key.gpg
+			@echo $(BUILD_RSYNC_ENCRYPTION_PASSWORD)|gpg --batch --passphrase-fd 0 ./host.key.gpg
+			chmod 600 ./host.key
+			rsync -rv -e "ssh -o BatchMode=yes -q -o StrictHostKeyChecking=no -i ./host.key" --include="*/" --include="*.tar.gz" --exclude="*" $(BUILD_RSYNC_USER)@$(BUILD_RSYNC_SERVER):"$(BUILD_RSYNC_PATH)" downloads/$(MQ_ARCHIVE_DEV)
+			-@rm host.key.gpg host.key
+		else
+		ifneq "$(MQ_ARCHIVE_REPOSITORY_DEV)" "$(EMPTY)"
+			curl --fail --user $(MQ_ARCHIVE_REPOSITORY_USER):$(MQ_ARCHIVE_REPOSITORY_CREDENTIAL) --request GET "$(MQ_ARCHIVE_REPOSITORY_DEV)" --output downloads/$(MQ_ARCHIVE_DEV)
+		else
+			curl --fail --location https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqadv/$(MQ_ARCHIVE_DEV) --output downloads/$(MQ_ARCHIVE_DEV)
+		endif
+		endif
+	endif
 
 downloads/$(MQ_ARCHIVE):
 	$(info $(SPACER)$(shell printf $(TITLE)"Downloading IBM MQ Advanced "$(MQ_VERSION)$(END)))
