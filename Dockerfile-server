@@ -18,7 +18,7 @@ ARG BUILDER_IMAGE=bitnami/golang
 ARG BUILDER_TAG=latest
 ARG GO_WORKDIR=/opt/app-root/src/go/src/github.com/ibm-messaging/mq-container
 
-ARG MQ_ARCHIVE="downloads/9.3.4.0-IBM-MQ-Advanced-for-Developers-Non-Install-LinuxX64.tar.gz"
+ARG MQ_ARCHIVE="downloads/9.3.4.1-IBM-MQ-Advanced-for-Developers-Non-Install-LinuxX64.tar.gz"
 
 ###############################################################################
 # Build stage to build Go code

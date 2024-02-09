@@ -1,12 +1,12 @@
 # Change log
 
-## 9.3.4.0-r1 (2024-01)
+## 9.3.4.1-r1 (2024-01)
 
-* Updated to MQ version 9.3.4.0
+* Updated to MQ version 9.3.4.1
 
-## 9.3.4.0 (2023-12)
+## 9.3.4.1 (2023-12)
 
-* Updated to MQ version 9.3.4.0
+* Updated to MQ version 9.3.4.1
 * Fixed the signal handler so that it correctly processes control signals if a termination signal is received before startup is complete
 * The default value for the environment variable MQ_LOGGING_CONSOLE_SOURCE is now "qmgr,web" instead of "qmgr".
 * Removed MQ Explorer and MQ SDK samples from the "incubating" folder.  IBM MQ Explorer was removed from the IBM MQ install package in 9.3.0.

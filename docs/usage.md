@@ -116,7 +116,7 @@ If you supply multiple identity certificates then the first label alphabetically
 It must be noted that queue manager certificate with a Subject Distinguished Name (DN) same as it's Issuer certificate (CA) is not supported. Certificates must have a unique Subject Distinguished Name.
 
 ## Running with a read-only root filesystem
-Starting with version 9.3.4.0, you can run MQ container with a read-only root filesystem. In order to do this, you need to mount three [volumes](https://docs.docker.com/storage/volumes/) into the MQ container, one for queue manager data, one for `run` directory that will contain files used for queue manager configuration and one for `tmp` directory that will be used for collecting diagnostic data. You also need specify `--read-only` parameter while starting the container. Following describes the steps to run MQ container with a read-only root filesystem. 
+Starting with version 9.3.4.1, you can run MQ container with a read-only root filesystem. In order to do this, you need to mount three [volumes](https://docs.docker.com/storage/volumes/) into the MQ container, one for queue manager data, one for `run` directory that will contain files used for queue manager configuration and one for `tmp` directory that will be used for collecting diagnostic data. You also need specify `--read-only` parameter while starting the container. Following describes the steps to run MQ container with a read-only root filesystem. 
 
 ```sh
 docker volume create qm1data
