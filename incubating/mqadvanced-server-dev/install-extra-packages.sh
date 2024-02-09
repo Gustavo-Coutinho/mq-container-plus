@@ -36,20 +36,20 @@ else
   UBUNTU=false
 fi
 
-if ($UBUNTU); then
+if $UBUNTU; then
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
     apt-get install -y --no-install-recommends libaprutil1
     rm -rf /var/lib/apt/lists/*
 fi
 
-if ($YUM); then
+if $YUM; then
     yum -y install apr-util-openssl
     yum -y clean all
     rm -rf /var/cache/yum/*
 fi
 
-if ($MICRODNF); then
+if $MICRODNF; then
     microdnf --disableplugin=subscription-manager install apr-util-openssl
     microdnf --disableplugin=subscription-manager clean all
 fi
