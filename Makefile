@@ -361,7 +361,7 @@ define build-mq
 	  --label name=$1 \
 	  --label build-date=$(shell date +%Y-%m-%dT%H:%M:%S%z) \
 	  --label architecture="$(ARCH)" \
-	  --label run="podman run -d -e LICENSE=accept $1:$2" \
+	  --label run="$(COMMAND) run -d -e LICENSE=accept $1:$2" \
 	  --label vcs-ref=$(IMAGE_REVISION) \
 	  --label vcs-type=git \
 	  --label vcs-url=$(IMAGE_SOURCE) \
