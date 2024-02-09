@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ARG BASE_IMAGE=ubuntu
-ARG BASE_TAG=rolling
+ARG BASE_TAG=latest
 ARG BUILDER_IMAGE=bitnami/golang
 ARG BUILDER_TAG=latest
 ARG GO_WORKDIR=/opt/app-root/src/go/src/github.com/ibm-messaging/mq-container
@@ -156,7 +156,8 @@ ENTRYPOINT ["runmqserver"]
 FROM builder as cbuilder
 USER 0
 # Install the Apache Portable Runtime code (used for htpasswd hash checking)
-RUN apt-get update && apt-get install -y apache2-dev libapr1-dev libaprutil1-dev
+RUN apt-get update && apt-get install -y apache2-dev libapr1-dev libaprutil1-dev && \
+    ln -s /usr/include/apr-1.0 /usr/include/apr-1
 COPY authservice/ /opt/app-root/src/authservice/
 WORKDIR /opt/app-root/src/authservice/mqhtpass
 RUN make all
