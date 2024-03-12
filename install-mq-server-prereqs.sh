@@ -18,10 +18,29 @@
 # Fail on any non-zero return code
 set -ex
 
-test -f /usr/bin/yum && YUM=true || YUM=false
-test -f /usr/bin/microdnf && MICRODNF=true || MICRODNF=false
-test -f /usr/bin/rpm && RPM=true || RPM=false
-test -f /usr/bin/apt-get && UBUNTU=true || UBUNTU=false
+if [ -f /usr/bin/yum ]; then
+  YUM=true
+else
+  YUM=false
+fi
+
+if [ -f /usr/bin/microdnf ]; then
+  MICRODNF=true
+else
+  MICRODNF=false
+fi
+
+if [ -f /usr/bin/rpm ]; then
+  RPM=true
+else
+  RPM=false
+fi
+
+if [ -f /usr/bin/apt-get ]; then
+  UBUNTU=true
+else
+  UBUNTU=false
+fi
 CPU_ARCH=$(uname -m)
 
 if ($UBUNTU); then

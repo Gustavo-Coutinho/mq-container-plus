@@ -18,8 +18,17 @@
 # Fail on any non-zero return code
 set -ex
 
-test -f /usr/bin/rpm && RPM=true || RPM=false
-test -f /usr/bin/apt-get && UBUNTU=true || UBUNTU=false
+if [ -f /usr/bin/rpm ]; then
+  RPM=true
+else
+  RPM=false
+fi
+
+if [ -f /usr/bin/apt-get ]; then
+  UBUNTU=true
+else
+  UBUNTU=false
+fi
 
 # Accept the MQ license
 /opt/mqm/bin/mqlicense -accept
