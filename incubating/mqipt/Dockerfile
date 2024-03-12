@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal
+FROM ubuntu
 ARG MQIPT_ARCHIVE=./IBM-MQIPT-LinuxX64.tar
 RUN microdnf --disableplugin=subscription-manager install bash grep procps-ng sed which
 ADD $MQIPT_ARCHIVE /opt
