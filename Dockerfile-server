@@ -110,13 +110,13 @@ LABEL summary="IBM MQ Advanced Server" \
 COPY --from=mq-redux /opt/mqm-redux/ /opt/mqm/
 COPY setup-image.sh /usr/local/bin/
 COPY install-mq-server-prereqs.sh /usr/local/bin/
-RUN env \
-  && chmod u+x /usr/local/bin/install-*.sh \
-  && chmod u+x /usr/local/bin/setup-image.sh \
-  && install-mq-server-prereqs.sh \
-  && setup-image.sh \
-  && /opt/mqm/bin/security/amqpamcf \
-  && chown -R 1001:root /opt/mqm/*
+RUN env
+RUN chmod u+x /usr/local/bin/install-*.sh
+RUN chmod u+x /usr/local/bin/setup-image.sh
+RUN install-mq-server-prereqs.sh
+RUN setup-image.sh
+RUN /opt/mqm/bin/security/amqpamcf
+RUN chown -R 1001:root /opt/mqm/*
 COPY --from=builder $GO_WORKDIR/runmqserver /usr/local/bin/
 COPY --from=builder $GO_WORKDIR/chkmq* /usr/local/bin/
 COPY ha/native-ha.ini.tpl /etc/mqm/native-ha.ini.tpl
