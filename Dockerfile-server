@@ -158,6 +158,7 @@ USER 0
 # Install the Apache Portable Runtime code (used for htpasswd hash checking)
 COPY ./go-shell.sh /go-shell.sh
 RUN chmod +x /go-shell.sh
+ENV BUILDER_IMAGE=${BUILDER_IMAGE}
 RUN /go-shell.sh ${BUILDER_IMAGE}
 COPY authservice/ /opt/app-root/src/authservice/
 WORKDIR /opt/app-root/src/authservice/mqhtpass
