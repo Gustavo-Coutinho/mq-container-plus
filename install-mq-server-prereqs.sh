@@ -41,9 +41,10 @@ if [ -f /usr/bin/apt-get ]; then
 else
   UBUNTU=false
 fi
+
 CPU_ARCH=$(uname -m)
 
-if ($UBUNTU); then
+if $UBUNTU; then
   export DEBIAN_FRONTEND=noninteractive
   # Use a reduced set of apt repositories.
   # This ensures no unsupported code gets installed, and makes the build faster
@@ -63,22 +64,27 @@ if ($UBUNTU); then
   EXTRA_DEBS="bash bc ca-certificates coreutils curl debianutils file findutils gawk grep libc-bin mount passwd procps sed tar util-linux"
   apt-get update
   apt-get install -y --no-install-recommends ${EXTRA_DEBS}
+  # Apply any bug fixes not included in base Ubuntu or MQ image.
+  # Don't upgrade everything based on Docker best practices https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run
+  apt-get install -y libapparmor1 libapr1-dev libsystemd0 systemd systemd-sysv libudev1 perl-base --only-upgrade
+  # End of bug fixes
+  # Clean up cached files
+  rm -rf /var/lib/apt/lists/*
 fi
 
-if ($RPM); then
+if $RPM; then
   EXTRA_RPMS="bash bc ca-certificates file findutils gawk glibc-common grep ncurses-compat-libs passwd procps-ng sed shadow-utils tar util-linux which"
   # Install additional packages required by MQ, this install process and the runtime scripts
-  $YUM && yum -y install --setopt install_weak_deps=false ${EXTRA_RPMS}
-  $MICRODNF && microdnf --disableplugin=subscription-manager install ${EXTRA_RPMS}
+  if $YUM; then
+    yum -y install --setopt install_weak_deps=false ${EXTRA_RPMS}
+    yum -y clean all
+    # Clean up cached files
+    rm -rf /var/cache/yum/*
+  fi
+  
+  if $MICRODNF; then
+    microdnf --disableplugin=subscription-manager install ${EXTRA_RPMS}
+    # Clean up cached files
+    microdnf --disableplugin=subscription-manager clean all
+  fi
 fi
-
-# Apply any bug fixes not included in base Ubuntu or MQ image.
-# Don't upgrade everything based on Docker best practices https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run
-$UBUNTU && apt-get install -y libapparmor1 libsystemd0 systemd systemd-sysv libudev1 perl-base
-# End of bug fixes
-
-# Clean up cached files
-$UBUNTU && rm -rf /var/lib/apt/lists/*
-$YUM && yum -y clean all
-$YUM && rm -rf /var/cache/yum/*
-$MICRODNF && microdnf --disableplugin=subscription-manager clean all
