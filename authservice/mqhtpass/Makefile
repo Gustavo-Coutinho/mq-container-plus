@@ -29,9 +29,10 @@ CFLAGS.s390x := -m64
 # -m64 is not a valid compiler option on aarch64/arm64 (ARM)
 CFLAGS.arm64 :=
 CFLAGS += -std=gnu11 -fPIC -Wall ${CFLAGS.${ARCH}}
-
+CFLAGS += -I/usr/include/apr-1
 LIB_APR = -L/usr/lib64 -lapr-1 -laprutil-1
 LIB_MQ = -L/opt/mqm/lib64 -lmqm_r
+
 
 all: $(BUILD_DIR)/mqhtpass.so $(BUILD_DIR)/htpass_test $(BUILD_DIR)/log_test
 
@@ -47,13 +48,13 @@ $(BUILD_DIR)/log_test : $(BUILD_DIR)/log.o
 
 $(BUILD_DIR)/htpass.o : $(SRC_DIR)/htpass.c $(SRC_DIR)/htpass.h
 	mkdir -p ${dir $@}
-	gcc $(CFLAGS) -c $(SRC_DIR)/htpass.c -I /usr/include/apr-1 -o $@
+	gcc $(CFLAGS) -c $(SRC_DIR)/htpass.c -o $@ -I/usr/include/apr-1
 
 $(BUILD_DIR)/htpass_test : $(BUILD_DIR)/htpass.o $(BUILD_DIR)/log.o
 	mkdir -p ${dir $@}
-	gcc $(CFLAGS) $(LIB_APR) -lpthread $(SRC_DIR)/htpass_test.c $^ -o $@
-# Run HTPasswd tests, and print log if they fail	
-	$@ || (cat htpass_test*.log && exit 1)
+	gcc $(CFLAGS) $(LIB_APR) -pthread $(SRC_DIR)/htpass_test.c $^ -o $@ -lapr-1 -laprutil-1
+	# Run HTPasswd tests, and print log if they fail    
+	./$@ || (cat htpass_test*.log && exit 1)
 
 $(BUILD_DIR)/mqhtpass.so : $(BUILD_DIR)/log.o $(BUILD_DIR)/htpass.o
 	mkdir -p ${dir $@}
