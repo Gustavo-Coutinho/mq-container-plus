@@ -12,12 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Create the mqm group
-RUN groupadd mqm
-
-# Create the mqm user and set its primary group to mqm
-RUN useradd -g mqm mqm
-
 ARG BASE_IMAGE=ubuntu
 ARG BASE_TAG=latest
 ARG BUILDER_IMAGE=bitnami/golang
@@ -150,6 +144,10 @@ ENV MQ_GRACE_PERIOD=30
 ENV LANG=en_US.UTF-8 AMQ_DIAGNOSTIC_MSG_SEVERITY=1 AMQ_ADDITIONAL_JSON_LOG=1
 ENV MQ_LOGGING_CONSOLE_EXCLUDE_ID=AMQ5041I,AMQ5052I,AMQ5051I,AMQ5037I,AMQ5975I
 ENV WLP_LOGGING_MESSAGE_FORMAT=json
+# Create the mqm group
+RUN groupadd mqm
+# Create the mqm user and set its primary group to mqm
+RUN useradd -g mqm mqm
 # We can run as any UID
 USER 1001
 ENV MQ_CONNAUTH_USE_HTP=false
