@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Create the mqm group
+RUN groupadd mqm
+
+# Create the mqm user and set its primary group to mqm
+RUN useradd -g mqm mqm
+
 ARG BASE_IMAGE=ubuntu
 ARG BASE_TAG=latest
 ARG BUILDER_IMAGE=bitnami/golang
@@ -194,7 +200,7 @@ COPY incubating/mqadvanced-server-dev/*.tpl /etc/mqm/
 COPY incubating/mqadvanced-server-dev/web /etc/mqm/web
 RUN ln -s /run/10-dev.mqsc /etc/mqm/10-dev.mqsc \
   && ln -s /run/20-dev-tls.mqsc /etc/mqm/20-dev-tls.mqsc
-RUN chown -R 1001:root /etc/mqm/* \
+RUN chown -R mqm:mqm /etc/mqm/* \
   && chmod -R g+w /etc/mqm/web \
   && chmod +x /usr/local/bin/runmq* \
   && ln -s /run/qm-service-component.ini /etc/mqm/qm-service-component.ini
@@ -205,5 +211,6 @@ ENV MQ_DEV=true \
   LD_LIBRARY_PATH=/opt/mqm/lib64 \
   MQ_CONNAUTH_USE_HTP=true \
   MQS_PERMIT_UNKNOWN_ID=true
-USER 1001
+  
+USER mqm
 ENTRYPOINT ["runmqdevserver"]
